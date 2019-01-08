@@ -60,8 +60,8 @@ static lv_res_t list_release_action(lv_obj_t * list_btn);
  *  STATIC VARIABLES
  **********************/
 static lv_indev_t * indev;
-static lv_group_t *group;
-static lv_obj_t *header;
+static lv_group_t * group;
+static lv_obj_t   * header;
 
 // STYLES
 static lv_style_t style_tv_btn_bg;
@@ -69,10 +69,10 @@ static lv_style_t style_tv_btn_rel;
 static lv_style_t style_tv_btn_pr;
 
 // THEME
-static lv_theme_t *th ;
+static lv_theme_t * th;
 
 // TABVIEW
-static lv_obj_t *tv = NULL;
+static lv_obj_t * tv;
 /**********************
  *  GLOBAL VARIABLES
  **********************/
