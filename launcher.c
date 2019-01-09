@@ -6,15 +6,16 @@
  * COPYRIGHT NOTICE: (c) 2018 Barr Group. All rights reserved.
  */
 
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
 #include "lvgl/lvgl.h"
 
-#include "game_consoles_icons.h"
-#include "espboy_wallpaper.h"
-#include "espboy_wallpaper_big.h"
-#include "home_screen_wallpaper.h"
+#include "icons/game_consoles_icons.h"
+#include "icons/espboy_wallpaper.h"
+#include "icons/espboy_wallpaper_big.h"
+#include "icons/home_screen_wallpaper.h"
 
 #include "launcher.h"
 
@@ -40,6 +41,12 @@ lv_obj_t *list3 = NULL; // TODO: change this variable name to 'sms_tab_list'
 lv_obj_t *list4 = NULL; // TODO: change this variable name to 'gb_tab_list'
 lv_obj_t *list5 = NULL; // TODO: change this variable name to 'gg_tab_list'
 
+// TABS
+lv_obj_t * tab1;
+lv_obj_t * tab2;
+lv_obj_t * tab3;
+lv_obj_t * tab4;
+lv_obj_t * tab5;
 /**********************
  *  STATIC VARIABLES
  **********************/
@@ -105,8 +112,9 @@ static lv_res_t tab_load_action(lv_obj_t * tabview, uint16_t act_id);
  *
  * @return this function does not return nothing
  */
-void launcher_init()
+void launcher_init(lv_indev_t * aux_indev)
 {
+    indev = aux_indev;
     /* Initialization of the ESPBoy Theme (Alien Theme)*/
     theme_init();
     /* Initialization of launcher objects style */
@@ -125,13 +133,13 @@ void launcher_init()
     set_styles();
     // Create lists to tabs
     create_lists();
-    /* -| ADD a action function to tabview |- */
+    // /* -| ADD a action function to tabview |- */
     lv_tabview_set_tab_load_action(tv, tab_load_action);
-    /* -| ADD itens to group |- */
+    // /* -| ADD itens to group |- */
     lv_group_add_obj(group, tv);
     lv_group_add_obj(group, list1);
     lv_group_focus_obj(list1);
-    /* -| SET group to indev |- */
+    // /* -| SET group to indev |- */
     lv_indev_set_group(indev, group);
 }
 
@@ -208,16 +216,20 @@ static void style_init()
     lv_style_copy(&style_background, &lv_style_transp);
     style_background.image.opa = 100;   
 
-    lv_style_copy(&style_tv_btn_bg, &lv_style_plain);
-    style_tv_btn_bg.body.main_color = LV_COLOR_BLACK;
-    style_tv_btn_bg.body.grad_color = LV_COLOR_GRAY;
-    // style_tv_btn_bg.body.main_color = LV_COLOR_HEX(0x487fb7);
-    // style_tv_btn_bg.body.grad_color = LV_COLOR_HEX(0x487fb7);
+    lv_style_copy(&style_tv_btn_bg, &lv_style_scr);
+    style_tv_btn_bg.body.main_color = th->bg->body.main_color;
+    style_tv_btn_bg.body.grad_color = th->bg->body.grad_color;
+    // style_tv_btn_bg.body.border.color = LV_COLOR_GREEN;
+    // style_tv_btn_bg.body.border.width = 1;
+    // style_tv_btn_bg.body.shadow.color = LV_COLOR_GREEN;
+    // style_tv_btn_bg.body.shadow.width = 1;
+
     style_tv_btn_bg.body.padding.ver = 0;
 
     lv_style_copy(&style_tv_btn_rel, &lv_style_btn_rel);
     style_tv_btn_rel.body.empty = 1;
     style_tv_btn_rel.body.border.width = 0;
+    // style_tv_btn_rel.body.padding.ver = 0;
 
     lv_style_copy(&style_tv_btn_pr, &lv_style_btn_pr);
     style_tv_btn_pr.body.radius = 0;
@@ -243,11 +255,11 @@ static void create_tabview()
  */
 static void create_tabs()
 {
-    lv_obj_t *tab1 = lv_tabview_add_tab(tv, SYMBOL_HOME);
-    lv_obj_t *tab2 = lv_tabview_add_tab(tv, "NES");
-    lv_obj_t *tab3 = lv_tabview_add_tab(tv, "SMS");
-    lv_obj_t *tab4 = lv_tabview_add_tab(tv, "GB");
-    lv_obj_t *tab5 = lv_tabview_add_tab(tv, "GG");
+    tab1 = lv_tabview_add_tab(tv, SYMBOL_HOME);
+    tab2 = lv_tabview_add_tab(tv, "NES");
+    tab3 = lv_tabview_add_tab(tv, "SMS");
+    tab4 = lv_tabview_add_tab(tv, "GB");
+    tab5 = lv_tabview_add_tab(tv, "GG");
 }
 
 /*!
@@ -271,7 +283,7 @@ static void set_backgrounds()
     lv_obj_set_width(nes_backgroud, nes_icon_large.header.w);
     lv_obj_set_height(nes_backgroud, nes_icon_large.header.h);
     lv_obj_set_parent(nes_backgroud, tab2);
-    lv_obj_set_pos(nes_backgroud, (LV_HOR_RES/2)-(nes_icon_large.header.w/2), -10);
+    lv_obj_set_pos(nes_backgroud, (LV_HOR_RES/2)-(nes_icon_large.header.w/2), 0);
 
     // ******** MASTERSYSTEM BACKGROUND ********
     lv_obj_t *sms_backgroud = lv_img_create(lv_scr_act(), NULL);
@@ -280,7 +292,7 @@ static void set_backgrounds()
     lv_obj_set_width(sms_backgroud, mastersystem_icon_large.header.w);
     lv_obj_set_height(sms_backgroud, mastersystem_icon_large.header.h);
     lv_obj_set_parent(sms_backgroud, tab3);
-    lv_obj_set_pos(sms_backgroud, (LV_HOR_RES/2)-(mastersystem_icon_large.header.w/2), -10);
+    lv_obj_set_pos(sms_backgroud, (LV_HOR_RES/2)-(mastersystem_icon_large.header.w/2), 0);
 
     // ******** GAMEBOY BACKGROUND ********
     lv_obj_t *gb_backgroud = lv_img_create(lv_scr_act(), NULL);
@@ -289,7 +301,7 @@ static void set_backgrounds()
     lv_obj_set_width(gb_backgroud, gameboy_icon_large.header.w);
     lv_obj_set_height(gb_backgroud, gameboy_icon_large.header.h);
     lv_obj_set_parent(gb_backgroud, tab4);
-    lv_obj_set_pos(gb_backgroud, (LV_HOR_RES/2)-(gameboy_icon_large.header.w/2), -10);
+    lv_obj_set_pos(gb_backgroud, (LV_HOR_RES/2)-(gameboy_icon_large.header.w/2), 0);
 
     // ******** GAMEGEAR BACKGROUND ********
     lv_obj_t *gg_backgroud = lv_img_create(lv_scr_act(), NULL);
@@ -298,7 +310,7 @@ static void set_backgrounds()
     lv_obj_set_width(gg_backgroud, gamegear_icon_large.header.w);
     lv_obj_set_height(gg_backgroud, gamegear_icon_large.header.h);
     lv_obj_set_parent(gg_backgroud, tab5);
-    lv_obj_set_pos(gg_backgroud, (LV_HOR_RES/2)-(gamegear_icon_large.header.w/2), -10);
+    lv_obj_set_pos(gg_backgroud, (LV_HOR_RES/2)-(gamegear_icon_large.header.w/2), 0);
 }
 
 /*!
@@ -316,11 +328,12 @@ static void set_styles()
     // ======= SET STYLE TO TABVIEW ======= 
     lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BG, &style_tv_btn_bg);
     lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BTN_BG, &style_tv_btn_bg);
+    // lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BTN_BG, &style_tv_btn_rel);
     lv_tabview_set_style(tv, LV_TABVIEW_STYLE_INDIC, &lv_style_plain);
     lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BTN_REL, &style_tv_btn_rel);
     lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BTN_PR, &style_tv_btn_pr);
     lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BTN_TGL_REL, &style_tv_btn_rel);
-    lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BTN_TGL_PR, &style_tv_btn_pr);    
+    lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BTN_TGL_PR, &style_tv_btn_pr);   
 }
 
 /*!
@@ -330,35 +343,35 @@ static void create_lists()
 {
     /* Crate the list1: HOME */
     list1 = lv_list_create(tab1, NULL);
-    lv_obj_set_size(list1, LV_HOR_RES, tabSize);
+    lv_obj_set_size(list1, LV_HOR_RES, lv_obj_get_height(tab1));
     lv_list_set_style(list1, LV_LIST_STYLE_BG, &lv_style_transp_tight);
     lv_list_set_style(list1, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
     lv_obj_align(list1, tab1, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
 
     /* -| Crate the list2: NES |- */
     list2 = lv_list_create(tab2, NULL);
-    lv_obj_set_size(list2, LV_HOR_RES, tabSize);
+    lv_obj_set_size(list2, LV_HOR_RES, lv_obj_get_height(tab2));
     lv_list_set_style(list2, LV_LIST_STYLE_BG, &lv_style_transp_tight);
     lv_list_set_style(list2, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
     lv_obj_align(list2, tab2, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
 
     /* -| Crate the list3: MASTERSYSTEM |- */
     list3 = lv_list_create(tab3, NULL);
-    lv_obj_set_size(list3, LV_HOR_RES, tabSize);
+    lv_obj_set_size(list3, LV_HOR_RES, lv_obj_get_height(tab3));
     lv_list_set_style(list3, LV_LIST_STYLE_BG, &lv_style_transp_tight);
     lv_list_set_style(list3, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
     lv_obj_align(list3, tab3, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
 
     /*Crate the list4: GAMEBOY */
     list4 = lv_list_create(tab4, NULL);
-    lv_obj_set_size(list4, LV_HOR_RES, tabSize);
+    lv_obj_set_size(list4, LV_HOR_RES, lv_obj_get_height(tab4));
     lv_list_set_style(list4, LV_LIST_STYLE_BG, &lv_style_transp_tight);
     lv_list_set_style(list4, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
     lv_obj_align(list4, tab4, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
 
     /* -| Crate the list5: GAMEGEAR |- */
     list5 = lv_list_create(tab5, NULL);
-    lv_obj_set_size(list5, LV_HOR_RES, tabSize);
+    lv_obj_set_size(list5, LV_HOR_RES, lv_obj_get_height(tab5));
     lv_list_set_style(list5, LV_LIST_STYLE_BG, &lv_style_transp_tight);
     lv_list_set_style(list5, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
     lv_obj_align(list5, tab5, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
