@@ -13,50 +13,15 @@
  *      INCLUDES
  *********************/
 #include <stdlib.h>
-#include "lvgl.h"
-
-/*********************
- *      DEFINES
- *********************/
-
-/**********************
- *      TYPEDEFS
- **********************/
-
-/**********************
- *      MACROS
- **********************/
-
-/**********************
- *   GLOBAL VARIABLES
- **********************/
-
-const char TAB_NAMES[][6] = {
-    {"HOME"},
-    {"NES"},
-    {"SMS"},
-    {"GB"},
-    {"GG"}
-};
-
-// OBJECTS
-lv_obj_t * actual;      // TODO: change this variable name to 'active_tab; 
-
-// LISTS
-lv_obj_t *list1 = NULL; // TODO: change this variable name to 'home_tab_list'
-lv_obj_t *list2 = NULL; // TODO: change this variable name to 'nes_tab_list'
-lv_obj_t *list3 = NULL; // TODO: change this variable name to 'sms_tab_list'
-lv_obj_t *list4 = NULL; // TODO: change this variable name to 'gb_tab_list'
-lv_obj_t *list5 = NULL; // TODO: change this variable name to 'gg_tab_list'
+#include "lvgl/lvgl.h"
 
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
 
-void launcher_create();
+void launcher_init();
 
 void launcher_update();
-
 
 #endif /* LAUNCHER_H */
 
