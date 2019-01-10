@@ -6,11 +6,14 @@
  * COPYRIGHT NOTICE: (c) 2018 Barr Group. All rights reserved.
  */
 
+/*********************
+ *      INCLUDES
+ *********************/
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "lvgl/lvgl.h"
+#include <lvgl.h>
 
 #include "icons/game_consoles_icons.h"
 #include "icons/espboy_wallpaper.h"

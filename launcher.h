@@ -12,8 +12,7 @@
 /*********************
  *      INCLUDES
  *********************/
-#include <stdlib.h>
-#include "lvgl/lvgl.h"
+#include <lvgl.h>
 
 /**********************
  *   GLOBAL FUNCTIONS
