@@ -3,7 +3,7 @@
 ## Unreleased
 
 - [] Organize files and functions
-- [] Add define to compile the launcher in test mode
+- [x] Add define to compile the launcher in test mode
 
 ## Screen Components
 
