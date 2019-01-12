@@ -16,6 +16,11 @@
 #include "lvgl/lvgl.h"
 
 /**********************
+ *   DEFINES
+ **********************/
+#define ADD_TEST_LIST   1
+
+/**********************
  *   GLOBAL FUNCTIONS
  **********************/
 

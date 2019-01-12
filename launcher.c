@@ -347,7 +347,7 @@ static void create_lists()
     lv_list_set_style(list1, LV_LIST_STYLE_BG, &lv_style_transp_tight);
     lv_list_set_style(list1, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
     lv_obj_align(list1, tab1, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
-
+    
     /* -| Crate the list2: NES |- */
     list2 = lv_list_create(tab2, NULL);
     lv_obj_set_size(list2, LV_HOR_RES, lv_obj_get_height(tab2));
@@ -375,6 +375,14 @@ static void create_lists()
     lv_list_set_style(list5, LV_LIST_STYLE_BG, &lv_style_transp_tight);
     lv_list_set_style(list5, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
     lv_obj_align(list5, tab5, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
+
+    #if ADD_TEST_LIST
+        add_home_itens();
+        add_nes_itens();
+        add_gb_itens();
+        add_gg_itens();
+        add_sms_itens();
+    #endif
 }
 
 /*!
