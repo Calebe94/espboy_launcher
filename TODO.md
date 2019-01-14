@@ -3,6 +3,7 @@
 ## Unreleased
 
 - [] Organize files and functions
+    - [] Should add a tag to each Emulator so when an I only add then to the launcher build when I port the respective emulator.
 - [x] Add define to compile the launcher in test mode
 
 ## Screen Components

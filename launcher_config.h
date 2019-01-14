@@ -17,5 +17,7 @@
 #define TEST_MODE_VOLUME    1
 #define TEST_MODE_BATTERY   1
 #define TEST_MODE_WIFI      1
+#define TEST_MODE_STORAGE   1
 
 #endif
+/*** end of file ***/

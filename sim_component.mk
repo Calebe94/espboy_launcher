@@ -1,4 +1,4 @@
-CSRCS += launcher.c volume.c
+CSRCS += launcher.c volume.c splash_screen.c
 #CSRCS += img_bubble_pattern.c
 
 DEPPATH += --dep-path espboy_launcher
