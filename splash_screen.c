@@ -18,7 +18,8 @@
 /**********************
  *   MACROS
  **********************/
-#define USE_ANIMATED_ARC 0
+#define USE_ANIMATED_ARC    0
+#define USE_BACKGROUND      1
 /**********************
  *   GLOBAL VARIABLES
  **********************/
@@ -43,23 +44,25 @@ static void lv_obj_set_angle(lv_obj_t * obj, int value)
  */
 void splash_screen_init()
 {
-    lv_obj_t * splash_screen_mbox = lv_mbox_create(lv_scr_act(), NULL);
-    lv_obj_align(splash_screen_mbox, NULL, LV_ALIGN_CENTER, 0, -50);
-    lv_obj_set_style(splash_screen_mbox, &lv_style_plain);
-    lv_mbox_set_text(splash_screen_mbox, "MinOS Loading...");
+    
+    #if USE_BACKGROUND
+        lv_obj_t * img1 = lv_img_create(lv_scr_act(), NULL);
+        lv_img_set_src(img1, &minos_logo);
+        lv_obj_set_width(img1, minos_logo.header.w);
+        lv_obj_set_height(img1, minos_logo.header.h);
+        lv_obj_align(img1, NULL, LV_ALIGN_CENTER, 0, 0);
 
-    lv_obj_t * img1 = lv_img_create(lv_scr_act(), NULL);
-    lv_img_set_src(img1, &minos_logo);
-    lv_obj_set_width(img1, minos_logo.header.w);
-    lv_obj_set_height(img1, minos_logo.header.h);
-    lv_obj_align(img1, NULL, LV_ALIGN_CENTER, 0, 0);
+        static lv_style_t style_img3;
+        lv_style_copy(&style_img3, &lv_style_plain);
+        // style_img3.image.color = LV_COLOR_HEX(0x003b75);
+        style_img3.body.opa = LV_OPA_10;
 
-    static lv_style_t style_img3;
-    lv_style_copy(&style_img3, &lv_style_plain);
-    // style_img3.image.color = LV_COLOR_HEX(0x003b75);
-    style_img3.image.intense = LV_OPA_90;
-
-    lv_obj_set_style(img1, &style_img3);
+        lv_obj_set_style(img1, &style_img3);
+    #endif
+    lv_obj_t * splash_screen_mbox = lv_mbox_create(img1, NULL);
+    lv_obj_align(splash_screen_mbox, NULL, LV_ALIGN_CENTER, 0, -40);
+    lv_obj_set_style(splash_screen_mbox, &style_img3);
+    lv_mbox_set_text(splash_screen_mbox, "Loading...");
 
     #if USE_ANIMATED_ARC
         static lv_style_t style;
