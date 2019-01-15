@@ -20,7 +20,15 @@
 #include "icons/espboy_wallpaper_big.h"
 #include "icons/home_screen_wallpaper.h"
 
+#include "launcher_config.h"
+
+#if TEST_MODE_VOLUME
+#include <time.h>
+#include <stdlib.h>
+#endif
+
 #include "launcher.h"
+#include "volume.h"
 
 /**********************
  *   GLOBAL VARIABLES
@@ -36,6 +44,10 @@ const char TAB_NAMES[][6] = {
 
 // OBJECTS
 lv_obj_t * actual;      // TODO: change this variable name to 'active_tab; 
+lv_obj_t * battery;     // TODO: change this variable name to 'header_battery_icon'
+lv_obj_t * volume;      // TODO: change this variable name to 'header_volume_icon'
+lv_obj_t * wifi;        // TODO: change this variable name to 'header_wifi_icon'
+lv_obj_t * storage;     // TODO: change this variable name to 'header_storage_icon'
 
 // LISTS
 lv_obj_t *list1 = NULL; // TODO: change this variable name to 'home_tab_list'
@@ -63,6 +75,7 @@ static lv_style_t style_tv_btn_bg;
 static lv_style_t style_tv_btn_rel;
 static lv_style_t style_tv_btn_pr;
 static lv_style_t style_background;
+static lv_style_t style_is_connected;
 
 // THEME
 static lv_theme_t * th; // TODO: change this variable name to 'theme'
@@ -104,6 +117,12 @@ static lv_res_t list_release_action(lv_obj_t * list_btn);
 
 static lv_res_t tab_load_action(lv_obj_t * tabview, uint16_t act_id);
 
+static char *  update_battery(uint16_t battery);
+
+static void update_wifi(bool connected);
+
+static void update_storage(bool connected);
+
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
@@ -117,6 +136,10 @@ static lv_res_t tab_load_action(lv_obj_t * tabview, uint16_t act_id);
  */
 void launcher_init(lv_indev_t * aux_indev)
 {
+    #if TEST_MODE_VOLUME
+        srand(time(NULL));   // Initialization, should only be called once.
+    #endif
+
     indev = aux_indev;
     /* Initialization of the ESPBoy Theme (Alien Theme)*/
     theme_init();
@@ -156,7 +179,36 @@ void launcher_init(lv_indev_t * aux_indev)
 
 void launcher_update()
 {
+    #if TEST_MODE_VOLUME
+        uint8_t show_volume = rand() % 255;
+        if( show_volume > 128 )
+        {
+            uint8_t aux_volume = rand() % 100;
+            show_volume_control(th->bg, aux_volume);
+            char * volume_icon = return_volume_symbol(aux_volume);
+            if(volume_icon != NULL)
+            {
+                lv_label_set_text(volume, volume_icon);  // Set the Volume symbol
+            }
+        }
+    #endif
 
+    #if TEST_MODE_BATTERY
+        int aux_battery = rand() % ((4200 + 1 - 2500) + 2500);
+        char * battery_icon = update_battery(aux_battery);
+        if(battery_icon != NULL)
+        {
+            lv_label_set_text(battery, battery_icon); // Set the Battery symbol 
+        }
+    #endif
+
+    #if TEST_MODE_WIFI 
+        update_wifi(false); 
+    #endif
+
+    #if TEST_MODE_STORAGE
+        update_storage(false); 
+    #endif
 }
 /**********************
  *   STATIC FUNCTIONS
@@ -174,30 +226,38 @@ static void create_header()
     /****************
     * ADD A BATTERY ICON
     ****************/
-    lv_obj_t * battery = lv_label_create(lv_scr_act(), NULL); // Create the Battery label
+    battery = lv_label_create(lv_scr_act(), NULL); // Create the Battery label
     lv_label_set_text(battery, SYMBOL_BATTERY_3); // Set the Battery symbol 
-    lv_obj_align(battery, header, LV_ALIGN_IN_TOP_RIGHT, (LV_HOR_RES - lv_obj_get_width(header)-30)/2, 0); // Set its position
+    lv_obj_align(battery, header, LV_ALIGN_IN_TOP_RIGHT, 120, 0); // Set its position
 
     /****************
     * ADD A VOLUME ICON
     ****************/
-    lv_obj_t * volume = lv_label_create(lv_scr_act(), NULL); // Create the Audio Volume label
-    lv_label_set_text(volume, SYMBOL_MUTE);  // Set the Volume symbol
-    lv_obj_align(volume, header, LV_ALIGN_IN_TOP_RIGHT, (LV_HOR_RES - lv_obj_get_width(header)-20)/3, 0); // Set its position
+    volume = lv_label_create(lv_scr_act(), NULL); // Create the Audio Volume label
+    lv_label_set_text(volume, SYMBOL_VOLUME_MAX);  // Set the Volume symbol
+    lv_obj_align(volume, header, LV_ALIGN_IN_TOP_RIGHT, 90, 0); // Set its position
 
     /****************
     * ADD A WIFI ICON
     ****************/
-    lv_obj_t * wifi = lv_label_create(lv_scr_act(), NULL); // Create the Audio WiFi label
-    lv_label_set_text(wifi, SYMBOL_CLOSE); // Set the WiFi icon (I've choose this symbol to show when there is no connection)
-    lv_obj_align(wifi, header, LV_ALIGN_IN_TOP_RIGHT, (LV_HOR_RES - lv_obj_get_width(header)-40)/4, 0); // Set its position 
+    wifi = lv_label_create(lv_scr_act(), NULL); // Create the Audio WiFi label
+    lv_label_set_text(wifi, SYMBOL_WIFI); // Set the WiFi icon (I've choose this symbol to show when there is no connection)
+    lv_obj_align(wifi, header, LV_ALIGN_IN_TOP_RIGHT, 65, 0); // Set its position 
+
+    /****************************
+    * ADD A SDCARD(STORAGE) ICON
+    ****************************/
+    storage = lv_label_create(lv_scr_act(), NULL); // Create the Audio WiFi label
+    // lv_label_set_style(storage, &style);
+    lv_label_set_text(storage, SYMBOL_DRIVE); // Set the WiFi icon (I've choose this symbol to show when there is no connection)
+    lv_obj_align(storage, header, LV_ALIGN_IN_TOP_RIGHT, 40, 0); // Set its position 
 
     /****************
     * ADD A ACTUAL TAB LABEL
     ****************/
     actual = lv_label_create(lv_scr_act(), NULL); // Create the Actual tab Label 
     lv_label_set_text(actual, TAB_NAMES[0]); // Set the tab name 
-    lv_obj_align(actual, header, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(header)-LV_HOR_RES)/2)+20, 0); // Set its position
+    lv_obj_align(actual, header, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(header)-LV_HOR_RES)/2)+10, 0); // Set its position
 }
 
 /*!
@@ -222,17 +282,11 @@ static void style_init()
     lv_style_copy(&style_tv_btn_bg, &lv_style_scr);
     style_tv_btn_bg.body.main_color = th->bg->body.main_color;
     style_tv_btn_bg.body.grad_color = th->bg->body.grad_color;
-    // style_tv_btn_bg.body.border.color = LV_COLOR_GREEN;
-    // style_tv_btn_bg.body.border.width = 1;
-    // style_tv_btn_bg.body.shadow.color = LV_COLOR_GREEN;
-    // style_tv_btn_bg.body.shadow.width = 1;
-
     style_tv_btn_bg.body.padding.ver = 0;
 
     lv_style_copy(&style_tv_btn_rel, &lv_style_btn_rel);
     style_tv_btn_rel.body.empty = 1;
     style_tv_btn_rel.body.border.width = 0;
-    // style_tv_btn_rel.body.padding.ver = 0;
 
     lv_style_copy(&style_tv_btn_pr, &lv_style_btn_pr);
     style_tv_btn_pr.body.radius = 0;
@@ -241,6 +295,8 @@ static void style_init()
     style_tv_btn_pr.body.grad_color = LV_COLOR_WHITE;
     style_tv_btn_pr.body.border.width = 0;
     style_tv_btn_pr.text.color = LV_COLOR_GRAY;
+
+    lv_style_copy(&style_is_connected, &lv_style_plain);
 }
 
 /*!
@@ -331,7 +387,6 @@ static void set_styles()
     // ======= SET STYLE TO TABVIEW ======= 
     lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BG, &style_tv_btn_bg);
     lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BTN_BG, &style_tv_btn_bg);
-    // lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BTN_BG, &style_tv_btn_rel);
     lv_tabview_set_style(tv, LV_TABVIEW_STYLE_INDIC, &lv_style_plain);
     lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BTN_REL, &style_tv_btn_rel);
     lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BTN_PR, &style_tv_btn_pr);
@@ -350,7 +405,7 @@ static void create_lists()
     lv_list_set_style(list1, LV_LIST_STYLE_BG, &lv_style_transp_tight);
     lv_list_set_style(list1, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
     lv_obj_align(list1, tab1, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
-
+    
     /* -| Crate the list2: NES |- */
     list2 = lv_list_create(tab2, NULL);
     lv_obj_set_size(list2, LV_HOR_RES, lv_obj_get_height(tab2));
@@ -378,6 +433,16 @@ static void create_lists()
     lv_list_set_style(list5, LV_LIST_STYLE_BG, &lv_style_transp_tight);
     lv_list_set_style(list5, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
     lv_obj_align(list5, tab5, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
+
+    #if TEST_MODE
+    #if TEST_MODE_LIST
+        add_home_itens();
+        add_nes_itens();
+        add_gb_itens();
+        add_gg_itens();
+        add_sms_itens();
+    #endif
+    #endif
 }
 
 /*!
@@ -440,6 +505,25 @@ static lv_res_t tab_load_action(lv_obj_t * tabview, uint16_t act_id)
     return LV_RES_OK;
 }
 
+static lv_res_t mbox_apply_action(lv_obj_t * btns, const char * txt)
+{
+    // printf("Mbox button: %s\n", txt);
+    #if TEST_MODE
+    #if TEST_MODE_MB
+        /*
+        * Check https://github.com/littlevgl/lvgl/issues/383#issuecomment-416462809 to see how to close MessageBox
+        */
+        lv_obj_t * mbox = lv_mbox_get_from_btn(btns);
+        lv_obj_t * gray_bg = lv_obj_get_parent(mbox);
+
+        lv_obj_del(mbox);
+        lv_group_focus_freeze(group, false);
+        lv_group_focus_next(group);
+    #endif
+    #endif
+    return LV_RES_OK; /*Return OK if the message box is not deleted*/
+}
+
 /*!
  * @brief This function is used when to perform some action when an item in tabview is clicked.
  *
@@ -449,7 +533,23 @@ static lv_res_t tab_load_action(lv_obj_t * tabview, uint16_t act_id)
  */
 static lv_res_t list_release_action(lv_obj_t * list_btn)
 {
-    printf("List element click:%s\n", lv_list_get_btn_text(list_btn));
+    // printf("List element click:%s\n", lv_list_get_btn_text(list_btn));
+
+    #if TEST_MODE
+    #if TEST_MODE_MB
+        lv_obj_t * mbox1 = lv_mbox_create(lv_scr_act(), NULL);
+        lv_mbox_set_text(mbox1, lv_list_get_btn_text(list_btn));                    /*Set the text*/
+
+        /*Add two buttons*/
+        static const char * btns[] ={"\221Close", ""}; /*Button description. '\221' lv_btnm like control char*/
+        lv_mbox_add_btns(mbox1, btns, mbox_apply_action);
+        lv_obj_set_width(mbox1, 200);
+        lv_obj_align(mbox1, NULL, LV_ALIGN_IN_TOP_MID, 10, 70); /*Align to the corner*/
+        lv_group_add_obj(group, mbox1);
+        lv_group_focus_next(group);
+        lv_group_focus_freeze(group,true);
+    #endif
+    #endif
 
     return LV_RES_OK; /*Return OK because the list is not deleted*/
 }
@@ -512,4 +612,65 @@ static void add_gg_itens()
     lv_list_add(list5, NULL, "Test 4", list_release_action);    
 }
 
+/*!
+ * @brief This function is used when to perform some action when an item in tabview is clicked.
+ *
+ * @param[in] tabview   Is the pointer to the tabview object.
+ * @param[in] act_id    Is the number id of the item clicked.
+ *
+ * @return LV_RES_OK if the object is valid.
+ */
+static char *  update_battery(uint16_t battery)
+{
+    if( (battery > 2500) && (battery < 2600) )
+    {
+        return SYMBOL_BATTERY_EMPTY;
+    }
+    else if( (battery > 2600) && (battery < 3000) )
+    {
+        return SYMBOL_BATTERY_1;
+    }
+    else if( (battery > 3000) && (battery < 3400) )
+    {
+        return SYMBOL_BATTERY_2;
+    }
+    else if( (battery > 3400) && (battery < 3800) )
+    {
+        return SYMBOL_BATTERY_3;
+    }
+    else if( battery > 3800 )
+    {
+        return SYMBOL_BATTERY_FULL;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+static void update_wifi(bool connected)
+{
+    if(connected)
+    {
+        style_is_connected.text.color = LV_COLOR_WHITE;
+    }
+    else
+    {
+        style_is_connected.text.color = LV_COLOR_RED;
+    }
+    lv_label_set_style(wifi, &style_is_connected);
+}
+
+static void update_storage(bool connected)
+{
+    if(connected)
+    {
+        style_is_connected.text.color = LV_COLOR_WHITE;
+    }
+    else
+    {
+        style_is_connected.text.color = LV_COLOR_RED;
+    }
+    lv_label_set_style(storage, &style_is_connected);
+}
 /*** end of file ***/
