@@ -2,7 +2,39 @@
 
 ![img](https://i.imgur.com/deGnXM5.png)
 
-The [ESPBoy](https://i.imgur.com/6rxyAPw.mp4) game launcher.
+The [ESPBoy](https://github.com/Calebe94/ESPBoy) game [launcher](https://i.imgur.com/6rxyAPw.mp4).
+
+# Setup
+
+## On littlevgl pc_simulator
+
+In the root folder of the pc_simulator do:
+
+```
+git clone https://github.com/littlevgl/pc_simulator
+```
+
+To test the launcher on the [pc_simulator](https://github.com/littlevgl/pc_simulator) you should edit some lines from [Makefile]() and [main.c]() files.
+
+* In **Makefile** you should add in the end of the includes the following line:
+```
+    include ./espboy_launcher/sim_component.mk
+```
+
+* In **main.c** you edit the file as follow:
+    * Add this in static variables:
+    ```
+        static lv_indev_t * indev;
+    ```  
+    * In hal_init() function remove every reference to mouse and add:
+    ```
+        keyboard_init();
+        lv_indev_drv_t indev_drv;
+        lv_indev_drv_init(&indev_drv);
+        indev_drv.type = LV_INDEV_TYPE_KEYPAD;
+        indev_drv.read = keyboard_read;
+        indev = lv_indev_drv_register(&indev_drv);
+    ```
 
 # Team
 
