@@ -19,6 +19,8 @@
 
 #include "launcher_config.h"
 
+#include "app_object.h"
+
 #if TEST_MODE_VOLUME
 #include <time.h>
 #include <stdlib.h>
@@ -131,13 +133,14 @@ static void update_storage(bool connected);
  *
  * @return this function does not return nothing
  */
-void launcher_init(lv_indev_t * aux_indev)
+void launcher_init(void * this)
 {
     #if TEST_MODE_VOLUME
         srand(time(NULL));   // Initialization, should only be called once.
     #endif
 
-    indev = aux_indev;
+    indev = ((app_t*)this)->indev;
+
     /* Initialization of the ESPBoy Theme (Alien Theme)*/
     theme_init();
     /* Initialization of launcher objects style */
@@ -174,7 +177,7 @@ void launcher_init(lv_indev_t * aux_indev)
  * @return this function does not return nothing
  */
 
-void launcher_update()
+void launcher_update(void * this)
 {
     #if TEST_MODE_VOLUME
         uint8_t show_volume = rand() % 255;
@@ -207,6 +210,12 @@ void launcher_update()
         update_storage(false); 
     #endif
 }
+
+void launcher_deinit(void * this)
+{
+
+}
+
 /**********************
  *   STATIC FUNCTIONS
  **********************/

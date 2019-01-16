@@ -50,7 +50,7 @@ static void create_splashscreen(void);
 /*!
  * @brief Creates and initialize the ESPBoy Splash Screen
  */
-void splash_screen_init()
+void splash_screen_init(void *this)
 {
     styles_init();
 
@@ -62,7 +62,7 @@ void splash_screen_init()
 /*!
  * @brief Creates and deinitialize the ESPBoy Splash Screen
  */
-void splash_screen_deinit()
+void splash_screen_deinit(void *this)
 {
     lv_obj_clean(preload);
     lv_obj_clean(background);

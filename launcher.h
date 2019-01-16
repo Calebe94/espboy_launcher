@@ -19,9 +19,11 @@
  *   GLOBAL FUNCTIONS
  **********************/
 
-void launcher_init(lv_indev_t *);
+void launcher_init(void *);
 
-void launcher_update();
+void launcher_deinit(void *);
+
+void launcher_update(void *);
 
 #endif /* LAUNCHER_H */
 

@@ -13,11 +13,11 @@
  **********************/
 #define TEST_MODE           1
 #define TEST_MODE_LIST      1
-#define TEST_MODE_MB        1
-#define TEST_MODE_VOLUME    1
-#define TEST_MODE_BATTERY   1
-#define TEST_MODE_WIFI      1
-#define TEST_MODE_STORAGE   1
+#define TEST_MODE_MB        0
+#define TEST_MODE_VOLUME    0
+#define TEST_MODE_BATTERY   0
+#define TEST_MODE_WIFI      0
+#define TEST_MODE_STORAGE   0
 
 #endif
 /*** end of file ***/

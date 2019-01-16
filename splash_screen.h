@@ -17,12 +17,12 @@
 /*!
  * @brief Creates and initialize the ESPBoy Splash Screen
  */
-void splash_screen_init(); 
+void splash_screen_init(void *); 
 
 /*!
  * @brief Creates and deinitialize the ESPBoy Splash Screen
  */
-void splash_screen_deinit();
+void splash_screen_deinit(void *);
 
 #endif
 /*** end of file ***/
