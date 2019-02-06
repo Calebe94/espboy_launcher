@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <lvgl.h>
+#include <lvgl/lvgl.h>
 
 #include "icons/game_consoles_icons.h"
 #include "icons/espboy_wallpaper.h"
@@ -38,32 +38,56 @@
 
 const char TAB_NAMES[][6] = {
     {"HOME"},
+#if NES_EMULATOR
     {"NES"},
+#endif
+#if SMS_EMULATOR
     {"SMS"},
+#endif
+#if GB_EMULATOR
     {"GB"},
+#endif
+#if GG_EMULATOR
     {"GG"}
+#endif
 };
 
 // OBJECTS
-lv_obj_t * actual;      // TODO: change this variable name to 'active_tab; 
-lv_obj_t * battery;     // TODO: change this variable name to 'header_battery_icon'
-lv_obj_t * volume;      // TODO: change this variable name to 'header_volume_icon'
-lv_obj_t * wifi;        // TODO: change this variable name to 'header_wifi_icon'
-lv_obj_t * storage;     // TODO: change this variable name to 'header_storage_icon'
+lv_obj_t * active_tab;      // TODO: change this variable name to 'active_tab; 
+lv_obj_t * header_battery_icon;     // TODO: change this variable name to 'header_battery_icon'
+lv_obj_t * header_volume_icon;      // TODO: change this variable name to 'header_volume_icon'
+lv_obj_t * header_wifi_icon;        // TODO: change this variable name to 'header_wifi_icon'
+lv_obj_t * header_storage_icon;     // TODO: change this variable name to 'header_storage_icon'
 
 // LISTS
-lv_obj_t *list1 = NULL; // TODO: change this variable name to 'home_tab_list'
-lv_obj_t *list2 = NULL; // TODO: change this variable name to 'nes_tab_list'
-lv_obj_t *list3 = NULL; // TODO: change this variable name to 'sms_tab_list'
-lv_obj_t *list4 = NULL; // TODO: change this variable name to 'gb_tab_list'
-lv_obj_t *list5 = NULL; // TODO: change this variable name to 'gg_tab_list'
+lv_obj_t *home_tab_list = NULL; // TODO: change this variable name to 'home_tab_list'
+#if NES_EMULATOR
+lv_obj_t *nes_tab_list = NULL; // TODO: change this variable name to 'nes_tab_list'
+#endif
+#if SMS_EMULATOR
+lv_obj_t *sms_tab_listst = NULL; // TODO: change this variable name to 'sms_tab_list'
+#endif
+#if GB_EMULATOR
+lv_obj_t *gb_tab_list = NULL; // TODO: change this variable name to 'gb_tab_list'
+#endif
+#if GG_EMULATOR
+lv_obj_t *gg_tab_list = NULL; // TODO: change this variable name to 'gg_tab_list'
+#endif
 
 // TABS
-lv_obj_t * tab1;
-lv_obj_t * tab2;
-lv_obj_t * tab3;
-lv_obj_t * tab4;
-lv_obj_t * tab5;
+lv_obj_t * home_tab;
+#if NES_EMULATOR
+lv_obj_t * nes_tab;
+#endif
+#if SMS_EMULATOR
+lv_obj_t * sms_tab;
+#endif
+#if GB_EMULATOR
+lv_obj_t * gb_tab;
+#endif
+#if GG_EMULATOR
+lv_obj_t * gg_tab;
+#endif
 /**********************
  *  STATIC VARIABLES
  **********************/
@@ -166,8 +190,8 @@ void launcher_init(void * this)
     lv_tabview_set_tab_load_action(tv, tab_load_action);
     // /* -| ADD itens to group |- */
     lv_group_add_obj(group, tv);
-    lv_group_add_obj(group, list1);
-    lv_group_focus_obj(list1);
+    lv_group_add_obj(group, home_tab_list);
+    lv_group_focus_obj(home_tab_list);
     // /* -| SET group to indev |- */
     lv_indev_set_group(indev, group);
 }
@@ -191,7 +215,7 @@ void launcher_update(void * this)
             char * volume_icon = return_volume_symbol(aux_volume);
             if(volume_icon != NULL)
             {
-                lv_label_set_text(volume, volume_icon);  // Set the Volume symbol
+                lv_label_set_text(header_volume_icon, volume_icon);  // Set the Volume symbol
             }
         }
     #endif
@@ -201,7 +225,7 @@ void launcher_update(void * this)
         char * battery_icon = update_battery(aux_battery);
         if(battery_icon != NULL)
         {
-            lv_label_set_text(battery, battery_icon); // Set the Battery symbol 
+            lv_label_set_text(header_battery_icon, battery_icon); // Set the Battery symbol 
         }
     #endif
 
@@ -235,38 +259,38 @@ static void create_header()
     /****************
     * ADD A BATTERY ICON
     ****************/
-    battery = lv_label_create(lv_scr_act(), NULL); // Create the Battery label
-    lv_label_set_text(battery, SYMBOL_BATTERY_3); // Set the Battery symbol 
-    lv_obj_align(battery, header, LV_ALIGN_IN_TOP_RIGHT, 120, 0); // Set its position
+    header_battery_icon = lv_label_create(lv_scr_act(), NULL); // Create the Battery label
+    lv_label_set_text(header_battery_icon, SYMBOL_BATTERY_3); // Set the Battery symbol 
+    lv_obj_align(header_battery_icon, header, LV_ALIGN_IN_TOP_RIGHT, 120, 0); // Set its position
 
     /****************
     * ADD A VOLUME ICON
     ****************/
-    volume = lv_label_create(lv_scr_act(), NULL); // Create the Audio Volume label
-    lv_label_set_text(volume, SYMBOL_VOLUME_MAX);  // Set the Volume symbol
-    lv_obj_align(volume, header, LV_ALIGN_IN_TOP_RIGHT, 90, 0); // Set its position
+    header_volume_icon = lv_label_create(lv_scr_act(), NULL); // Create the Audio Volume label
+    lv_label_set_text(header_volume_icon, SYMBOL_VOLUME_MAX);  // Set the Volume symbol
+    lv_obj_align(header_volume_icon, header, LV_ALIGN_IN_TOP_RIGHT, 90, 0); // Set its position
 
     /****************
     * ADD A WIFI ICON
     ****************/
-    wifi = lv_label_create(lv_scr_act(), NULL); // Create the Audio WiFi label
-    lv_label_set_text(wifi, SYMBOL_WIFI); // Set the WiFi icon (I've choose this symbol to show when there is no connection)
-    lv_obj_align(wifi, header, LV_ALIGN_IN_TOP_RIGHT, 65, 0); // Set its position 
+    header_wifi_icon = lv_label_create(lv_scr_act(), NULL); // Create the Audio WiFi label
+    lv_label_set_text(header_wifi_icon, SYMBOL_WIFI); // Set the WiFi icon (I've choose this symbol to show when there is no connection)
+    lv_obj_align(header_wifi_icon, header, LV_ALIGN_IN_TOP_RIGHT, 65, 0); // Set its position 
 
     /****************************
     * ADD A SDCARD(STORAGE) ICON
     ****************************/
-    storage = lv_label_create(lv_scr_act(), NULL); // Create the Audio WiFi label
-    // lv_label_set_style(storage, &style);
-    lv_label_set_text(storage, SYMBOL_DRIVE); // Set the WiFi icon (I've choose this symbol to show when there is no connection)
-    lv_obj_align(storage, header, LV_ALIGN_IN_TOP_RIGHT, 40, 0); // Set its position 
+    header_storage_icon = lv_label_create(lv_scr_act(), NULL); // Create the Audio WiFi label
+    // lv_label_set_style(header_storage_icon, &style);
+    lv_label_set_text(header_storage_icon, SYMBOL_DRIVE); // Set the WiFi icon (I've choose this symbol to show when there is no connection)
+    lv_obj_align(header_storage_icon, header, LV_ALIGN_IN_TOP_RIGHT, 40, 0); // Set its position 
 
     /****************
     * ADD A ACTUAL TAB LABEL
     ****************/
-    actual = lv_label_create(lv_scr_act(), NULL); // Create the Actual tab Label 
-    lv_label_set_text(actual, TAB_NAMES[0]); // Set the tab name 
-    lv_obj_align(actual, header, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(header)-LV_HOR_RES)/2)+10, 0); // Set its position
+    active_tab = lv_label_create(lv_scr_act(), NULL); // Create the Actual tab Label 
+    lv_label_set_text(active_tab, TAB_NAMES[0]); // Set the tab name 
+    lv_obj_align(active_tab, header, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(header)-LV_HOR_RES)/2)+10, 0); // Set its position
 }
 
 /*!
@@ -323,11 +347,19 @@ static void create_tabview()
  */
 static void create_tabs()
 {
-    tab1 = lv_tabview_add_tab(tv, SYMBOL_HOME);
-    tab2 = lv_tabview_add_tab(tv, "NES");
-    tab3 = lv_tabview_add_tab(tv, "SMS");
-    tab4 = lv_tabview_add_tab(tv, "GB");
-    tab5 = lv_tabview_add_tab(tv, "GG");
+    home_tab = lv_tabview_add_tab(tv, SYMBOL_HOME);
+    #if NES_EMULATOR
+    nes_tab = lv_tabview_add_tab(tv, "NES");
+    #endif
+    #if SMS_EMULATOR
+    sms_tab = lv_tabview_add_tab(tv, "SMS");
+    #endif
+    #if GB_EMULATOR
+    gb_tab = lv_tabview_add_tab(tv, "GB");
+    #endif
+    #if GG_EMULATOR
+    gg_tab = lv_tabview_add_tab(tv, "GG");
+    #endif
 }
 
 /*!
@@ -341,44 +373,55 @@ static void set_backgrounds()
     lv_img_set_src(home_backgroud, &espboy_wallpaper);
     lv_obj_set_width(home_backgroud, espboy_wallpaper.header.w*3);
     lv_obj_set_height(home_backgroud, espboy_wallpaper.header.h*2);
-    lv_obj_set_parent(home_backgroud, tab1);
+    lv_obj_set_parent(home_backgroud, home_tab);
     lv_obj_set_pos(home_backgroud, (espboy_wallpaper.header.w/5), 0);
 
     // ******** NES BACKGROUND ********
+
+    #if NES_EMULATOR
     lv_obj_t *nes_backgroud = lv_img_create(lv_scr_act(), NULL);
     lv_img_set_style(nes_backgroud, &style_background);
     lv_img_set_src(nes_backgroud, &nes_icon_large);
     lv_obj_set_width(nes_backgroud, nes_icon_large.header.w);
     lv_obj_set_height(nes_backgroud, nes_icon_large.header.h);
-    lv_obj_set_parent(nes_backgroud, tab2);
+    lv_obj_set_parent(nes_backgroud, nes_tab);
     lv_obj_set_pos(nes_backgroud, (LV_HOR_RES/2)-(nes_icon_large.header.w/2), 0);
+    #endif
 
     // ******** MASTERSYSTEM BACKGROUND ********
+
+    #if SMS_EMULATOR
     lv_obj_t *sms_backgroud = lv_img_create(lv_scr_act(), NULL);
     lv_img_set_style(sms_backgroud, &style_background);
     lv_img_set_src(sms_backgroud, &mastersystem_icon_large);
     lv_obj_set_width(sms_backgroud, mastersystem_icon_large.header.w);
     lv_obj_set_height(sms_backgroud, mastersystem_icon_large.header.h);
-    lv_obj_set_parent(sms_backgroud, tab3);
+    lv_obj_set_parent(sms_backgroud, sms_tab);
     lv_obj_set_pos(sms_backgroud, (LV_HOR_RES/2)-(mastersystem_icon_large.header.w/2), 0);
+    #endif
 
     // ******** GAMEBOY BACKGROUND ********
+
+    #if GB_EMULATOR
     lv_obj_t *gb_backgroud = lv_img_create(lv_scr_act(), NULL);
     lv_img_set_style(gb_backgroud, &style_background);
     lv_img_set_src(gb_backgroud, &gameboy_icon_large);
     lv_obj_set_width(gb_backgroud, gameboy_icon_large.header.w);
     lv_obj_set_height(gb_backgroud, gameboy_icon_large.header.h);
-    lv_obj_set_parent(gb_backgroud, tab4);
+    lv_obj_set_parent(gb_backgroud, gb_tab);
     lv_obj_set_pos(gb_backgroud, (LV_HOR_RES/2)-(gameboy_icon_large.header.w/2), 0);
+    #endif
 
     // ******** GAMEGEAR BACKGROUND ********
+    #if GG_EMULATOR
     lv_obj_t *gg_backgroud = lv_img_create(lv_scr_act(), NULL);
     lv_img_set_style(gg_backgroud, &style_background);
     lv_img_set_src(gg_backgroud, &gamegear_icon_large);
     lv_obj_set_width(gg_backgroud, gamegear_icon_large.header.w);
     lv_obj_set_height(gg_backgroud, gamegear_icon_large.header.h);
-    lv_obj_set_parent(gg_backgroud, tab5);
+    lv_obj_set_parent(gg_backgroud, gg_tab);
     lv_obj_set_pos(gg_backgroud, (LV_HOR_RES/2)-(gamegear_icon_large.header.w/2), 0);
+    #endif
 }
 
 /*!
@@ -387,11 +430,22 @@ static void set_backgrounds()
 static void set_styles()
 {
     // ======= SET STYLE TO TABS ======= 
-    lv_cont_set_style(tab1, th->bg);
-    lv_cont_set_style(tab2, th->bg);
-    lv_cont_set_style(tab3, th->bg);
-    lv_cont_set_style(tab4, th->bg);
-    lv_cont_set_style(tab5, th->bg);
+    lv_cont_set_style(home_tab, th->bg);
+    #if NES_EMULATOR
+    lv_cont_set_style(nes_tab, th->bg);
+    #endif
+
+    #if SMS_EMULATOR
+    lv_cont_set_style(sms_tab, th->bg);
+    #endif
+
+    #if GB_EMULATOR
+    lv_cont_set_style(gb_tab, th->bg);
+    #endif
+
+    #if GG_EMULATOR
+    lv_cont_set_style(gg_tab, th->bg);
+    #endif
 
     // ======= SET STYLE TO TABVIEW ======= 
     lv_tabview_set_style(tv, LV_TABVIEW_STYLE_BG, &style_tv_btn_bg);
@@ -408,48 +462,67 @@ static void set_styles()
  */
 static void create_lists()
 {
-    /* Crate the list1: HOME */
-    list1 = lv_list_create(tab1, NULL);
-    lv_obj_set_size(list1, LV_HOR_RES, lv_obj_get_height(tab1));
-    lv_list_set_style(list1, LV_LIST_STYLE_BG, &lv_style_transp_tight);
-    lv_list_set_style(list1, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
-    lv_obj_align(list1, tab1, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
+    /* Crate the home_tab_list: HOME */
+    home_tab_list = lv_list_create(home_tab, NULL);
+    lv_obj_set_size(home_tab_list, LV_HOR_RES, lv_obj_get_height(home_tab));
+    lv_list_set_style(home_tab_list, LV_LIST_STYLE_BG, &lv_style_transp_tight);
+    lv_list_set_style(home_tab_list, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
+    lv_obj_align(home_tab_list, home_tab, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(home_tab)-LV_HOR_RES)/2), 0);
     
-    /* -| Crate the list2: NES |- */
-    list2 = lv_list_create(tab2, NULL);
-    lv_obj_set_size(list2, LV_HOR_RES, lv_obj_get_height(tab2));
-    lv_list_set_style(list2, LV_LIST_STYLE_BG, &lv_style_transp_tight);
-    lv_list_set_style(list2, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
-    lv_obj_align(list2, tab2, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
+    /* -| Crate the nes_tab_list: NES |- */
+    #if NES_EMULATOR
+    nes_tab_list = lv_list_create(nes_tab, NULL);
+    lv_obj_set_size(nes_tab_list, LV_HOR_RES, lv_obj_get_height(nes_tab));
+    lv_list_set_style(nes_tab_list, LV_LIST_STYLE_BG, &lv_style_transp_tight);
+    lv_list_set_style(nes_tab_list, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
+    lv_obj_align(nes_tab_list, nes_tab, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(home_tab)-LV_HOR_RES)/2), 0);
+    #endif
 
-    /* -| Crate the list3: MASTERSYSTEM |- */
-    list3 = lv_list_create(tab3, NULL);
-    lv_obj_set_size(list3, LV_HOR_RES, lv_obj_get_height(tab3));
-    lv_list_set_style(list3, LV_LIST_STYLE_BG, &lv_style_transp_tight);
-    lv_list_set_style(list3, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
-    lv_obj_align(list3, tab3, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
+    /* -| Crate the sms_tab_listst: MASTERSYSTEM |- */
+    #if SMS_EMULATOR
+    sms_tab_listst = lv_list_create(sms_tab, NULL);
+    lv_obj_set_size(sms_tab_listst, LV_HOR_RES, lv_obj_get_height(sms_tab));
+    lv_list_set_style(sms_tab_listst, LV_LIST_STYLE_BG, &lv_style_transp_tight);
+    lv_list_set_style(sms_tab_listst, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
+    lv_obj_align(sms_tab_listst, sms_tab, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(home_tab)-LV_HOR_RES)/2), 0);
+    #endif
 
-    /*Crate the list4: GAMEBOY */
-    list4 = lv_list_create(tab4, NULL);
-    lv_obj_set_size(list4, LV_HOR_RES, lv_obj_get_height(tab4));
-    lv_list_set_style(list4, LV_LIST_STYLE_BG, &lv_style_transp_tight);
-    lv_list_set_style(list4, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
-    lv_obj_align(list4, tab4, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
+    /*Crate the gb_tab_list: GAMEBOY */
+    #if GB_EMULATOR
+    gb_tab_list = lv_list_create(gb_tab, NULL);
+    lv_obj_set_size(gb_tab_list, LV_HOR_RES, lv_obj_get_height(gb_tab));
+    lv_list_set_style(gb_tab_list, LV_LIST_STYLE_BG, &lv_style_transp_tight);
+    lv_list_set_style(gb_tab_list, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
+    lv_obj_align(gb_tab_list, gb_tab, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(home_tab)-LV_HOR_RES)/2), 0);
+    #endif
 
-    /* -| Crate the list5: GAMEGEAR |- */
-    list5 = lv_list_create(tab5, NULL);
-    lv_obj_set_size(list5, LV_HOR_RES, lv_obj_get_height(tab5));
-    lv_list_set_style(list5, LV_LIST_STYLE_BG, &lv_style_transp_tight);
-    lv_list_set_style(list5, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
-    lv_obj_align(list5, tab5, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(tab1)-LV_HOR_RES)/2), 0);
+    /* -| Crate the gg_tab_list: GAMEGEAR |- */
+    #if GG_EMULATOR
+    gg_tab_list = lv_list_create(gg_tab, NULL);
+    lv_obj_set_size(gg_tab_list, LV_HOR_RES, lv_obj_get_height(gg_tab));
+    lv_list_set_style(gg_tab_list, LV_LIST_STYLE_BG, &lv_style_transp_tight);
+    lv_list_set_style(gg_tab_list, LV_LIST_STYLE_SCRL, &lv_style_transp_tight);
+    lv_obj_align(gg_tab_list, gg_tab, LV_ALIGN_IN_TOP_LEFT, ((lv_obj_get_width(home_tab)-LV_HOR_RES)/2), 0);
+    #endif
 
     #if TEST_MODE
     #if TEST_MODE_LIST
         add_home_itens();
+        #if NES_EMULATOR
         add_nes_itens();
+        #endif
+
+        #if SMS_EMULATOR
         add_gb_itens();
+        #endif
+
+        #if GB_EMULATOR
         add_gg_itens();
+        #endif
+
+        #if GG_EMULATOR
         add_sms_itens();
+        #endif
     #endif
     #endif
 }
@@ -462,49 +535,109 @@ static void create_lists()
  *
  * @return LV_RES_OK if the object is valid.
  */
+
+// TODO: Check this act_id, when I add another emulators i've to check who is gonna enter to group
 static lv_res_t tab_load_action(lv_obj_t * tabview, uint16_t act_id)
 {
-    lv_label_set_text(actual, TAB_NAMES[act_id]); // Set active tab name in header
+    lv_label_set_text(active_tab, TAB_NAMES[act_id]); // Set active tab name in header
     switch(act_id)
     {
         case 0: 
-            lv_group_add_obj(group, list1); // Add active tab contant to group
+            lv_group_add_obj(group, home_tab_list); // Add active tab contant to group
             /* Remove other tabs from group */
-            lv_group_remove_obj(list2);
-            lv_group_remove_obj(list3);
-            lv_group_remove_obj(list4);
-            lv_group_remove_obj(list5);
+            #if NES_EMULATOR
+            lv_group_remove_obj(nes_tab_list);
+            #endif
+
+            #if SMS_EMULATOR
+            lv_group_remove_obj(sms_tab_listst);
+            #endif
+
+            #if GB_EMULATOR
+            lv_group_remove_obj(gb_tab_list);
+            #endif
+
+            #if GG_EMULATOR
+            lv_group_remove_obj(gg_tab_list);
+            #endif
             break;
         case 1: 
-            lv_group_add_obj(group, list2); // Add active tab contant to group
+            #if NES_EMULATOR
+            lv_group_add_obj(group, nes_tab_list); // Add active tab contant to group
+            #endif
             /* Remove other tabs from group */
-            lv_group_remove_obj(list1);
-            lv_group_remove_obj(list3);
-            lv_group_remove_obj(list4);
-            lv_group_remove_obj(list5);
+            lv_group_remove_obj(home_tab_list);
+
+            #if SMS_EMULATOR
+            lv_group_remove_obj(sms_tab_listst);
+            #endif
+
+            #if GB_EMULATOR
+            lv_group_remove_obj(gb_tab_list);
+            #endif
+
+            #if GG_EMULATOR
+            lv_group_remove_obj(gg_tab_list);
+            #endif
             break;
         case 2: 
-            lv_group_add_obj(group, list3); // Add active tab contant to group
+            #if SMS_EMULATOR
+            lv_group_add_obj(group, sms_tab_listst); // Add active tab contant to group
+            #endif
+            
+            #if NES_EMULATOR
+            lv_group_remove_obj(nes_tab_list);
+            #endif
+
+            #if GB_EMULATOR
+            lv_group_remove_obj(gb_tab_list);
+            #endif
+
+            #if GG_EMULATOR
+            lv_group_remove_obj(gg_tab_list);
+            #endif
+            
             /* Remove other tabs from group */
-            lv_group_remove_obj(list1);
-            lv_group_remove_obj(list2);
-            lv_group_remove_obj(list4);
-            lv_group_remove_obj(list5);
+            lv_group_remove_obj(home_tab_list);
             break;
         case 3: 
-            lv_group_add_obj(group, list4); // Add active tab contant to group
+            #if GB_EMULATOR
+            lv_group_add_obj(group, gb_tab_list); // Add active tab contant to group
+            #endif
+
+            #if NES_EMULATOR
+            lv_group_remove_obj(nes_tab_list);
+            #endif
+
+            #if SMS_EMULATOR
+            lv_group_remove_obj(sms_tab_listst);
+            #endif
+
+            #if GG_EMULATOR
+            lv_group_remove_obj(gg_tab_list);
+            #endif
             /* Remove other tabs from group */
-            lv_group_remove_obj(list1);
-            lv_group_remove_obj(list2);
-            lv_group_remove_obj(list3);
-            lv_group_remove_obj(list5);
+            lv_group_remove_obj(home_tab_list);
             break;
         case 4: 
-            lv_group_remove_obj(list1);
-            lv_group_remove_obj(list2);
-            lv_group_remove_obj(list3);
-            lv_group_remove_obj(list4);
-            lv_group_add_obj(group, list5);
+            #if GG_EMULATOR
+            lv_group_add_obj(group, gg_tab_list);
+            #endif
+
+            #if NES_EMULATOR
+            lv_group_remove_obj(nes_tab_list);
+            #endif
+
+            #if SMS_EMULATOR
+            lv_group_remove_obj(sms_tab_listst);
+            #endif
+
+            #if GB_EMULATOR
+            lv_group_remove_obj(gb_tab_list);
+            #endif
+
+            lv_group_remove_obj(home_tab_list);
+
             break;
     }
     /*  focus on the tab content */
@@ -543,7 +676,6 @@ static lv_res_t mbox_apply_action(lv_obj_t * btns, const char * txt)
 static lv_res_t list_release_action(lv_obj_t * list_btn)
 {
     // printf("List element click:%s\n", lv_list_get_btn_text(list_btn));
-
     #if TEST_MODE
     #if TEST_MODE_MB
         lv_obj_t * mbox1 = lv_mbox_create(lv_scr_act(), NULL);
@@ -568,9 +700,9 @@ static lv_res_t list_release_action(lv_obj_t * list_btn)
  */
 static void add_home_itens()
 {
-    /* -| ADD Itens to list1: HOME |- */
-    lv_list_add(list1, SYMBOL_FILE, "Recently Played", list_release_action);
-    lv_list_add(list1, SYMBOL_SETTINGS, "Settings", list_release_action);
+    /* -| ADD Itens to home_tab_list: HOME |- */
+    lv_list_add(home_tab_list, SYMBOL_FILE, "Recently Played", list_release_action);
+    lv_list_add(home_tab_list, SYMBOL_SETTINGS, "Settings", list_release_action);
 }
 
 /*!
@@ -578,11 +710,13 @@ static void add_home_itens()
  */
 static void add_nes_itens()
 {
-    /* -| ADD Itens to list2: NES |- */
-    lv_list_add(list2, NULL, "Test 1", list_release_action);
-    lv_list_add(list2, NULL, "Test 2", list_release_action);
-    lv_list_add(list2, NULL, "Test 3", list_release_action);
-    lv_list_add(list2, NULL, "Test 4", list_release_action);
+    /* -| ADD Itens to nes_tab_list: NES |- */
+    #if NES_EMULATOR
+    lv_list_add(nes_tab_list, NULL, "Test 1", list_release_action);
+    lv_list_add(nes_tab_list, NULL, "Test 2", list_release_action);
+    lv_list_add(nes_tab_list, NULL, "Test 3", list_release_action);
+    lv_list_add(nes_tab_list, NULL, "Test 4", list_release_action);
+    #endif
 }
 
 /*!
@@ -590,11 +724,13 @@ static void add_nes_itens()
  */
 static void add_sms_itens()
 {
-    /* -| ADD Itens to list3: MASTERSYSTEM |- */
-    lv_list_add(list3, NULL, "Test 1", list_release_action);
-    lv_list_add(list3, NULL, "Test 2", list_release_action);
-    lv_list_add(list3, NULL, "Test 3", list_release_action);
-    lv_list_add(list3, NULL, "Test 4", list_release_action);
+    /* -| ADD Itens to sms_tab_listst: MASTERSYSTEM |- */
+    #if SMS_EMULATOR
+    lv_list_add(sms_tab_listst, NULL, "Test 1", list_release_action);
+    lv_list_add(sms_tab_listst, NULL, "Test 2", list_release_action);
+    lv_list_add(sms_tab_listst, NULL, "Test 3", list_release_action);
+    lv_list_add(sms_tab_listst, NULL, "Test 4", list_release_action);
+    #endif
 }
 
 /*!
@@ -602,11 +738,13 @@ static void add_sms_itens()
  */
 static void add_gb_itens()
 {
-    /* -| ADD Itens to list4: GAMEBOY |- */
-    lv_list_add(list4, NULL, "Test 1", list_release_action);
-    lv_list_add(list4, NULL, "Test 2", list_release_action);
-    lv_list_add(list4, NULL, "Test 3", list_release_action);
-    lv_list_add(list4, NULL, "Test 4", list_release_action); 
+    /* -| ADD Itens to gb_tab_list: GAMEBOY |- */
+    #if GB_EMULATOR
+    lv_list_add(gb_tab_list, NULL, "Test 1", list_release_action);
+    lv_list_add(gb_tab_list, NULL, "Test 2", list_release_action);
+    lv_list_add(gb_tab_list, NULL, "Test 3", list_release_action);
+    lv_list_add(gb_tab_list, NULL, "Test 4", list_release_action); 
+    #endif
 }
 
 /*!
@@ -614,11 +752,13 @@ static void add_gb_itens()
  */
 static void add_gg_itens()
 {
-    /* -| ADD Itens to list5: GAMEGEAR |- */
-    lv_list_add(list5, NULL, "Test 1", list_release_action);
-    lv_list_add(list5, NULL, "Test 2", list_release_action);
-    lv_list_add(list5, NULL, "Test 3", list_release_action);
-    lv_list_add(list5, NULL, "Test 4", list_release_action);    
+    /* -| ADD Itens to gg_tab_list: GAMEGEAR |- */
+    #if GG_EMULATOR
+    lv_list_add(gg_tab_list, NULL, "Test 1", list_release_action);
+    lv_list_add(gg_tab_list, NULL, "Test 2", list_release_action);
+    lv_list_add(gg_tab_list, NULL, "Test 3", list_release_action);
+    lv_list_add(gg_tab_list, NULL, "Test 4", list_release_action);    
+    #endif
 }
 
 /*!
@@ -667,7 +807,7 @@ static void update_wifi(bool connected)
     {
         style_is_connected.text.color = LV_COLOR_RED;
     }
-    lv_label_set_style(wifi, &style_is_connected);
+    lv_label_set_style(header_wifi_icon, &style_is_connected);
 }
 
 static void update_storage(bool connected)
@@ -680,6 +820,6 @@ static void update_storage(bool connected)
     {
         style_is_connected.text.color = LV_COLOR_RED;
     }
-    lv_label_set_style(storage, &style_is_connected);
+    lv_label_set_style(header_storage_icon, &style_is_connected);
 }
 /*** end of file ***/
