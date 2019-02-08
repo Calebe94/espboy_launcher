@@ -72,7 +72,7 @@ lv_res_t show_volume_control(lv_style_t *style_base,  uint8_t volume)
  */
 char * return_volume_symbol(uint8_t volume)
 {
-    if( (volume>(-1)) && (volume<20) )
+    if( (volume>(0)) && (volume<20) )
     {
         return SYMBOL_MUTE;
     }

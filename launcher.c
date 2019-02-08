@@ -79,12 +79,15 @@ lv_obj_t * home_tab;
 #if NES_EMULATOR
 lv_obj_t * nes_tab;
 #endif
+
 #if SMS_EMULATOR
 lv_obj_t * sms_tab;
 #endif
+
 #if GB_EMULATOR
 lv_obj_t * gb_tab;
 #endif
+
 #if GG_EMULATOR
 lv_obj_t * gg_tab;
 #endif
@@ -94,7 +97,7 @@ lv_obj_t * gg_tab;
 static lv_indev_t   * indev;
 static lv_group_t   * group;
 static lv_obj_t     * header;
-static lv_obj_t     * footer;
+// static lv_obj_t     * footer;
 
 // STYLES
 static lv_style_t style_tv_btn_bg;
@@ -131,13 +134,21 @@ static void create_lists();
 
 static void add_home_itens();
 
+#if NES_EMULATOR
 static void add_nes_itens();
+#endif
 
+#if SMS_EMULATOR
 static void add_sms_itens();
+#endif
 
+#if GB_EMULATOR
 static void add_gb_itens();
+#endif
 
+#if GG_EMULATOR
 static void add_gg_itens();
+#endif
 
 static lv_res_t list_release_action(lv_obj_t * list_btn);
 
@@ -656,7 +667,7 @@ static lv_res_t mbox_apply_action(lv_obj_t * btns, const char * txt)
         * Check https://github.com/littlevgl/lvgl/issues/383#issuecomment-416462809 to see how to close MessageBox
         */
         lv_obj_t * mbox = lv_mbox_get_from_btn(btns);
-        lv_obj_t * gray_bg = lv_obj_get_parent(mbox);
+        // lv_obj_t * gray_bg = lv_obj_get_parent(mbox);
 
         lv_obj_del(mbox);
         lv_group_focus_freeze(group, false);
@@ -708,58 +719,59 @@ static void add_home_itens()
 /*!
  * @brief This function is used to add itens to nes list
  */
+#if NES_EMULATOR
 static void add_nes_itens()
 {
     /* -| ADD Itens to nes_tab_list: NES |- */
-    #if NES_EMULATOR
     lv_list_add(nes_tab_list, NULL, "Test 1", list_release_action);
     lv_list_add(nes_tab_list, NULL, "Test 2", list_release_action);
     lv_list_add(nes_tab_list, NULL, "Test 3", list_release_action);
     lv_list_add(nes_tab_list, NULL, "Test 4", list_release_action);
-    #endif
 }
+#endif
 
 /*!
  * @brief This function is used to add itens to sms list
  */
+
+#if SMS_EMULATOR
 static void add_sms_itens()
 {
     /* -| ADD Itens to sms_tab_listst: MASTERSYSTEM |- */
-    #if SMS_EMULATOR
     lv_list_add(sms_tab_listst, NULL, "Test 1", list_release_action);
     lv_list_add(sms_tab_listst, NULL, "Test 2", list_release_action);
     lv_list_add(sms_tab_listst, NULL, "Test 3", list_release_action);
     lv_list_add(sms_tab_listst, NULL, "Test 4", list_release_action);
-    #endif
 }
+#endif
 
 /*!
  * @brief This function is used to add itens to gb list
  */
+#if GB_EMULATOR
 static void add_gb_itens()
 {
     /* -| ADD Itens to gb_tab_list: GAMEBOY |- */
-    #if GB_EMULATOR
     lv_list_add(gb_tab_list, NULL, "Test 1", list_release_action);
     lv_list_add(gb_tab_list, NULL, "Test 2", list_release_action);
     lv_list_add(gb_tab_list, NULL, "Test 3", list_release_action);
     lv_list_add(gb_tab_list, NULL, "Test 4", list_release_action); 
-    #endif
 }
+#endif
 
 /*!
  * @brief This function is used to add itens to gg list
  */
+#if GG_EMULATOR
 static void add_gg_itens()
 {
     /* -| ADD Itens to gg_tab_list: GAMEGEAR |- */
-    #if GG_EMULATOR
     lv_list_add(gg_tab_list, NULL, "Test 1", list_release_action);
     lv_list_add(gg_tab_list, NULL, "Test 2", list_release_action);
     lv_list_add(gg_tab_list, NULL, "Test 3", list_release_action);
-    lv_list_add(gg_tab_list, NULL, "Test 4", list_release_action);    
-    #endif
-}
+    lv_list_add(gg_tab_list, NULL, "Test 4", list_release_action); 
+}   
+#endif
 
 /*!
  * @brief This function is used when to perform some action when an item in tabview is clicked.
